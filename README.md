@@ -33,8 +33,9 @@ links, stability under subsampling and aggregation, and bootstrap intervals.
 
 Data: exchange-traded funds (ETFs) across equities, rates, credit,
 commodities, currencies, volatility and crypto; 5-minute bars for two years;
-daily bars for 2007 to 2026; and a panel of 349 US stocks. A nat is the unit
-of information when logarithms are natural (1 nat = 1.44 bits).
+and daily bars for 2007 to 2026. Every number below comes from the full-size
+runs on the cluster, with each structure search repeated on 20 subsamples, two
+other maximum lags and two coarser sampling intervals.
 
 ### Daily data rarely reveal who drives whom
 
@@ -58,17 +59,17 @@ undetermined, arrowheads mark definite directions, numbers mark lags in days.
 (equities with implied volatility, equities with credit, the Treasury curve
 with credit, the dollar with emerging markets and gold) but, consistent with
 the sampling result, almost no directions. 55 of the 66 pairs are unresolved
-at one day.
+at one day. All 13 links that pass false-discovery control appear in every one
+of the 20 subsamples.
 
 ### A microstructure artefact, caught
 
 ![intraday](figures/03_intraday_graph_stale_price_artefact.png)
 
-The same analysis on 5-minute bars, over the last 120 sessions. Almost every
-arrowhead points into the dollar ETF (UUP): all six of its same-bar links and
-a lagged link from gold; the only other one runs from oil to financials. UUP
-has about ten times more stale 5-minute bars
-than the others (4.9 percent against 0.45 percent), and stale prices make an
+The same analysis on 5-minute bars, pooling all 489 sessions. Five of the six
+same-bar arrowheads point into the dollar ETF (UUP), and so do two lagged
+links, from long Treasuries and gold, which appear in every subsample. UUP has
+about ten times more stale 5-minute bars than the others (4.9 percent against 0.45 percent), and stale prices make an
 illiquid instrument lag liquid ones mechanically. The pipeline flags these
 arrowheads as a likely artefact rather than evidence that the dollar is driven
 by the rest.
@@ -87,17 +88,9 @@ period since. The mechanism of SPY, IWM, IEF, GLD, XLF and XLK changes across
 these regimes; EFA, EEM, LQD, HYG, USO, XLE and the VIX show no detectable
 change. Nonlinear links concentrate in the crisis regime (small caps, emerging
 markets, financials) and, for oil to high-yield credit, after 2020. No lagged
-link survives false-discovery control in any regime, which fits weak daily
-predictability in liquid markets.
-
-### Volume and volatility across 349 stocks
-
-![panel](figures/06_volume_volatility_coupling.png)
-
-Stocks treated as repeated samples of one system, estimated day by day from
-October 2023 to September 2026. The coupling from abnormal volume to the next
-day's absolute return is weak most of the time (median 0.0006 nats per day)
-and arrives in bursts; the reverse direction bursts at other times.
+link from one asset to another survives false-discovery control in any regime,
+which fits weak daily predictability in liquid markets. Of the 80 links that
+do survive, 76 appear in at least 80 percent of the subsamples.
 
 ## Validation against known answers
 
@@ -108,27 +101,31 @@ whose true causal structure is known.
 
 Fraction of causal marks (arrowheads and tails) that contradict the true
 structure, on three systems: a hidden common driver, a feedback loop, and a
-feedback loop with some near-vanishing links. This work made no wrong mark at
-any sample size. Two standard baselines made up to 15 percent (LPCMCI) and up
-to 32 percent (SVAR-FCI) wrong marks, and on the feedback systems the SVAR-FCI
-error grew with sample size.
+feedback loop with some near-vanishing links; 30 simulations per point. Over
+all 450 runs this work made 3 wrong marks, each on a link that the
+independence tests had wrongly admitted, and none on the feedback systems. Two
+standard baselines made up to 14 percent (LPCMCI) and up to 35 percent
+(SVAR-FCI) wrong marks, and their error grew with sample size on some
+systems.
 
 ![direction](figures/08_validation_direction_trap.png)
 
 A trap for direction tests: two series share a hidden driver and have no link
 between them, but one is observed with more noise. A standard net
 information-flow score points confidently the wrong way (0.82 to 0.98). The
-test used here reported a false direction in none of 16 trials, and found the
-true direction in 4 of 4 trials where a real one-way link existed.
+test used here reported a false direction in 3 of 200 trials, all of them in
+the equal-noise case where a 5 percent false-alarm rate is expected by design,
+and found the true direction in 50 of 50 trials where a real one-way link
+existed.
 
-Other checks, each against an exact answer:
+Other checks, each against an exact answer, 50 simulations per setting:
 
 | Check | Result |
 |---|---|
-| Coupling strength on a benchmark with known value | within 4 percent of the exact value |
-| Number of planted hidden drivers | inside the reported range in every trial |
-| Recovery of planted hidden drivers | Amari error index 0.008 to 0.036 (0 is perfect) |
-| False alarms for nonlinearity on a linear system | none, over six settings |
+| Coupling strength on a benchmark with known value | within 6 percent of the exact value |
+| Number of planted hidden drivers | inside the reported range in 300 of 300 trials |
+| Recovery of planted hidden drivers | Amari error index 0.009 to 0.034 (0 is perfect) |
+| False alarms for nonlinearity on a linear system | 2 to 14 percent at a nominal 10 percent |
 
 ## Engineering
 
@@ -140,7 +137,8 @@ Other checks, each against an exact answer:
   nodes.
 - High-performance computing: SLURM array jobs on 96-core AMD nodes (Stony
   Brook SeaWulf), with pinned environments and measured run-time and memory
-  budgets for every job.
+  budgets for every job. The full validation and all market studies finish
+  in about an hour of wall time.
 - Profiling found and fixed three problems before they cost cluster time: a
   numpy 2.5 incompatibility in a dependency that crashed every
   nonparametric search, a quadrature that needed more than 18 GB of memory
