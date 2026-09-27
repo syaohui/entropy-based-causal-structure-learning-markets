@@ -8,7 +8,7 @@ causal statements the data support, which ones an unmeasured driver could
 explain, and which ones the sampling interval cannot decide. It reports an
 undecided link as undecided instead of forcing a direction.
 
-The pipeline is a Python package of about 6,000 lines, with 52 automated tests
+The pipeline is a Python package of about 7,500 lines, with 52 automated tests
 against closed-form answers and exact oracles. It runs on a laptop at reduced
 settings and on a SLURM cluster at full size. The implementation is private
 (see [Code availability](#code-availability)).
@@ -92,12 +92,71 @@ link from one asset to another survives false-discovery control in any regime,
 which fits weak daily predictability in liquid markets. Of the 80 links that
 do survive, 76 appear in at least 80 percent of the subsamples.
 
+### Three hidden drivers, and the 2021 break
+
+![hidden drivers](figures/06_hidden_drivers_and_the_2021_break.png)
+
+(a) Only three common factors in the twelve daily ETF series rise above what
+shuffled data produce; together they carry 69 percent of the variance
+(41, 17 and 11 percent). (b) After rotation they read as a risk factor
+(equities, high-yield credit and bitcoin load positively, the volatility ETF
+at -0.88), a rates factor (long and short Treasuries) and a dollar and gold
+factor (gold +0.84, the dollar -0.71). None of the three is a traded series in
+the dataset, which is why the network above has so many links without
+directions: most of them share one of these drivers. (c) One-year rolling
+correlations, with the four regime breaks found above as dotted lines. The
+stock and Treasury correlation sat between -0.36 and -0.58 in every regime
+before February 2021 and averages +0.08 since; the one-year rolling value has
+been positive throughout 2023 to 2026. The Treasury and high-yield correlation
+went from between -0.20 and -0.40 to +0.40, and oil decoupled from equities
+(+0.33 to +0.58 before, +0.08 after). Long Treasuries stopped hedging equities.
+
+### Volume forecasts volatility, not direction
+
+![volume and volatility](figures/07_volume_forecasts_volatility.png)
+
+349 US stocks, 736 trading days, each variable measured against the same day's
+cross-sectional average. (a) Today's volume anomaly ranks tomorrow's absolute
+return with a rank correlation of +0.064 (t = 19), positive on 76 percent of
+days and equal in the two halves of the sample (0.060 and 0.069). The effect
+is convex: the lower six deciles are flat and the top decile moves about 0.8
+percentage points more than they do the next day. It adds to today's absolute return
+rather than repeating it (t = 9.7 with today's absolute return held fixed).
+Volume does not predict the sign of tomorrow's return (t = 1.7). (b) The
+reverse direction is U-shaped: large moves of either sign raise tomorrow's
+volume. Useful for volatility targeting, position sizing and option timing;
+useless as a directional signal.
+
+### Intraday lead and lag does not pay for the tick
+
+![intraday edge](figures/08_intraday_edge_versus_tick.png)
+
+Every five-minute link found above, and controls, fitted on the first 244
+sessions and tested on the next 245. (a) Out-of-sample correlation against
+horizon. Treasuries and gold do lead the dollar ETF one bar ahead (0.12 and
+0.11), and every signal is inside the no-signal band by 10 minutes. (b) The
+gross edge of trading on those forecasts is about 0.6 basis points per trade,
+against a one-cent minimum tick of 3.6 basis points on the dollar ETF. The
+lead over the dollar ETF is real in the data but far too small to trade, as
+expected if it comes from stale prices.
+
+### What holds up, in trading terms
+
+- Direction between liquid ETFs cannot be read from daily or 5-minute bars;
+  the sampling diagnostic says so before any search is run.
+- The common structure is three hidden drivers, and the regime breaks can
+  be dated from the data alone. Since the 2021 break, long Treasuries no
+  longer hedge equities.
+- Across single stocks, abnormal volume is a stable forecaster of next-day
+  volatility and carries no information about direction.
+- No cross-asset lead at 5 minutes or longer survives trading costs.
+
 ## Validation against known answers
 
 Before touching market data, every stage was scored on simulated systems
 whose true causal structure is known.
 
-![structure](figures/07_validation_structure_errors.png)
+![structure](figures/09_validation_structure_errors.png)
 
 Fraction of causal marks (arrowheads and tails) that contradict the true
 structure, on three systems: a hidden common driver, a feedback loop, and a
@@ -108,7 +167,7 @@ standard baselines made up to 14 percent (LPCMCI) and up to 35 percent
 (SVAR-FCI) wrong marks, and their error grew with sample size on some
 systems.
 
-![direction](figures/08_validation_direction_trap.png)
+![direction](figures/10_validation_direction_trap.png)
 
 A trap for direction tests: two series share a hidden driver and have no link
 between them, but one is observed with more noise. A standard net
@@ -130,8 +189,8 @@ Other checks, each against an exact answer, 50 simulations per setting:
 ## Engineering
 
 - Package: estimators, statistical tests, structure search, diagnostics,
-  plotting, a command-line tool and a configuration system. About 4,500 lines
-  in the library and 1,500 in applications and scripts.
+  plotting, a command-line tool and a configuration system. About 5,300 lines
+  in the library and 2,200 in applications and scripts.
 - Testing: 52 tests pinning each estimator and diagnostic to a closed form or
   an exact oracle, including soundness checks on 40 random graphs with hidden
   nodes.
