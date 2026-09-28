@@ -143,7 +143,7 @@ either sign raise tomorrow's volume.
 Every five-minute link found above, and controls, fitted on the first 244
 sessions and tested on the next 245. (a) Out-of-sample correlation against
 horizon. Treasuries and gold do lead the dollar ETF one bar ahead (0.12 and
-0.11), and every signal is inside the no-signal band by 10 minutes. (b) The
+0.11), and every signal is inside the no-signal band by 15 minutes. (b) The
 gross edge of trading on those forecasts is about 0.6 basis points per trade,
 against a one-cent minimum tick of 3.6 basis points on the dollar ETF. The
 lead is real in the data but far too small to trade, as expected if it comes
