@@ -64,14 +64,20 @@ A Python package that takes any set of time series and answers, pair by pair
 and with a reliability check on every answer:
 
 ```mermaid
-flowchart LR
-    A["Time series<br/>prices, volume,<br/>implied volatility"] --> B["Sampling check<br/>can direction be<br/>resolved at all?"]
-    B --> C["Regime detection<br/>when do relations<br/>change?"]
-    C --> D["Structure search<br/>hidden drivers<br/>and feedback allowed"]
-    D --> E["Re-check every link<br/>nonparametric and<br/>machine-learning tests"]
-    E --> F["Direction<br/>timing, asymmetry,<br/>scheduled events"]
-    F --> G["Nonlinearity<br/>and strength"]
-    G --> H["Out of sample<br/>and trading costs"]
+flowchart TB
+    subgraph S1 ["Structure"]
+        direction LR
+        A["1. Time series<br/>prices, volume,<br/>implied volatility"] --> B["2. Sampling check<br/>can direction be<br/>resolved at all?"]
+        B --> C["3. Regimes<br/>when do relations<br/>change?"]
+        C --> D["4. Structure search<br/>hidden drivers and<br/>feedback allowed"]
+    end
+    subgraph S2 ["Direction, form and value"]
+        direction LR
+        E["5. Re-check every link<br/>nonparametric and<br/>machine-learning tests"] --> F["6. Direction<br/>timing, asymmetry,<br/>scheduled events"]
+        F --> G["7. Nonlinearity<br/>and strength"]
+        G --> H["8. Out of sample<br/>and trading costs"]
+    end
+    D --> E
 ```
 
 Design choices that shaped every result:
