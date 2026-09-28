@@ -77,7 +77,7 @@ flowchart TB
         F --> G["7. Nonlinearity<br/>and strength"]
         G --> H["8. Out of sample<br/>and trading costs"]
     end
-    D --> E
+    S1 --> S2
 ```
 
 Design choices that shaped every result:
